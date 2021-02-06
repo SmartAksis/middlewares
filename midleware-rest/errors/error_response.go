@@ -8,6 +8,22 @@ type ResponseError struct {
 	Error   string `json:"error"`
 }
 
+func InternalServerError(message string)*ResponseError {
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusInternalServerError,
+		Error:   "conflict",
+	}
+}
+
+func Conflict(message string)*ResponseError {
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusConflict,
+		Error:   "conflict",
+	}
+}
+
 func MethodForbidden(message string)*ResponseError {
 	return &ResponseError{
 		Message: message,
