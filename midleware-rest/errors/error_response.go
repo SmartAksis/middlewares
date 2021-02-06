@@ -8,6 +8,22 @@ type ResponseError struct {
 	Error   string `json:"error"`
 }
 
+func MethodForbidden(message string)*ResponseError {
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusForbidden,
+		Error:   "forbidden",
+	}
+}
+
+func NotAuthorized(message string) *ResponseError {
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusUnauthorized,
+		Error:   "unauthorized",
+	}
+}
+
 func NewBadRequestError(message string) *ResponseError {
 	return &ResponseError{
 		Message: message,
