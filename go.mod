@@ -13,5 +13,4 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.20.12
-
 )

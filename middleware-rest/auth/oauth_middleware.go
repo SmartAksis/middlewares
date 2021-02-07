@@ -1,16 +1,21 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/middlewares/midleware-rest/errors"
+	"github.com/middlewares/middleware-rest/errors"
+	"net/http"
 	"strings"
 )
 
 const (
 	WithoutPermission = "without permission to proceed"
 )
+
+type ResponseErrorToken struct {
+	Message string
+	Error	string
+}
 
 func Authenticated(c *gin.Context){
 	token, _ := GetToken(c)
@@ -47,21 +52,20 @@ func AuthenticatedWrite(c *gin.Context) {
 }
 
 func authenticateScope(c *gin.Context, claims jwt.MapClaims, _scope string){
-
 	result := GetClaim(claims, "scope")
-
 	if result != nil {
 		for _, v := range result.([]interface{}) {
 			if v.(string) == _scope {
 				return
 			}
 		}
-		restErr := errors.MethodForbidden(WithoutPermission)
-		c.JSON(restErr.Status, restErr)
+		c.JSON(http.StatusForbidden, &ResponseErrorToken{
+			Message: WithoutPermission,
+			Error: "forbidden",
+		})
 		c.Abort()
 		return
 	}
-
 }
 
 
@@ -78,9 +82,10 @@ func GetToken(c *gin.Context) (*jwt.Token, jwt.MapClaims) {
 			return []byte("smartaksiskey"), nil
 		})
 		if err != nil {
-			restErr := errors.NotAuthorized("expired token")
-			fmt.Print(err.Error())
-			c.JSON(restErr.Status, restErr)
+			c.JSON(http.StatusUnauthorized, &ResponseErrorToken{
+				Message: "expired token",
+				Error: "unauthorized",
+			})
 			return nil, nil
 		}
 		return token, claims
