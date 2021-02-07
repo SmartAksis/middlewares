@@ -1,4 +1,4 @@
-package gorm
+package database
 
 func SequenceNextVal(sequence string) int64 {
 	var nextId int64

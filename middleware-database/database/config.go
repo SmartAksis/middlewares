@@ -1,4 +1,4 @@
-package gorm
+package database
 
 type GormProperties struct {
 	Host string

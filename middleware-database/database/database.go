@@ -1,4 +1,4 @@
-package gorm
+package database
 
 import (
 	"fmt"
@@ -13,13 +13,11 @@ var (
 
 func GetDatabase(property GormProperties) *gorm.DB {
 	if database == nil {
+
 		dialect := postgres.New(postgres.Config{
 			DSN: fmt.Sprintf("host=%d user=%d password=%d dbname=%d port=%d search_path=%d sslmode=%d TimeZone=%d", property.Host, property.User, property.Password, property.DbName, property.Port, property.Schema, property.SslMode, property.TimeZone),
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
 		})
-
-		//DSN: "host=localhost user=smart_aksis password=sm4r74k515 dbname=postgres port=5432 search_path="+property.Schema+" sslmode=disable TimeZone=Brazil/East",
-
 
 		db, err := gorm.Open(dialect, &gorm.Config{})
 		if err != nil {
