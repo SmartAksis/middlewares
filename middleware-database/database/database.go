@@ -12,9 +12,6 @@ var (
 
 func GetDatabase(property GormProperties) *gorm.DB {
 	if database == nil {
-
-
-
 		dialect := postgres.New(postgres.Config{
 			DSN: fmt.Sprintf("host=%d user=%d password=%d dbname=%d port=%d search_path=%d sslmode=%d TimeZone=%d", property.Host, property.User, property.Password, property.DbName, property.Port, property.Schema, property.SslMode, property.TimeZone),
 			PreferSimpleProtocol: true, // disables implicit prepared statement usage
@@ -24,9 +21,7 @@ func GetDatabase(property GormProperties) *gorm.DB {
 		if err != nil {
 			return nil
 		}
-
 		database = db
-
 	}
 
 

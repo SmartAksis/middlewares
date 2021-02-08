@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"os"
+	"strings"
 )
 
 type convert func([]byte)
@@ -24,16 +25,17 @@ type MessageSender struct {
 func awsSession() (*session.Session, error) {
 	awsSqsKey := os.Getenv("AWS_SQS_KEY")
 	awsSqsSecret := os.Getenv("AWS_SQS_SECRET")
+	region := os.Getenv("AWS_REGION")
 	return session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region: aws.String(strings.ToLower(region)),
 		Credentials: credentials.NewStaticCredentials(awsSqsKey, awsSqsSecret, ""),},
 	)
 }
 
 func buildQueueUrl(queueName string) string {
-	region := os.Getenv("AWS_REGION")
+	region := strings.ToLower(os.Getenv("AWS_REGION"))
 	account := os.Getenv("AWS_ACCOUNT_NUMBER")
-	envi := os.Getenv("ENVI")
+	envi := strings.ToLower(os.Getenv("ENVI"))
 	return fmt.Sprintf("https://sqs.%d.amazonaws.com/%d/%d-%d", region, account, envi, queueName)
 }
 

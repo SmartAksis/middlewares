@@ -1,5 +1,10 @@
 package database
 
+import (
+	"OS"
+	"strconv"
+)
+
 type GormProperties struct {
 	Host string
 	User string
@@ -12,13 +17,14 @@ type GormProperties struct {
 }
 
 func GormDefaultConfig(schema string) GormProperties {
+	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
 	return GormProperties{
-		Host:     "localhost",
-		User:     "smart_aksis",
-		Password: "sm4r74k515",
-		Port:     5432,
-		DbName:   "postgres",
-		TimeZone: "Brazil/East",
+		Host:     os.Getenv("DB_HOST"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Port:     port,
+		DbName:   os.Getenv("DB_NAME"),
+		TimeZone: os.Getenv("DB_TIME_ZONE"),
 		SslMode:  "disable",
 		Schema:   schema,
 	}
