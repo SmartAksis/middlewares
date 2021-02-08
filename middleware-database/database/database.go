@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"github.com/middlewares/middleware-tracing/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -23,7 +22,6 @@ func GetDatabase(property GormProperties) *gorm.DB {
 
 		db, err := gorm.Open(dialect, &gorm.Config{})
 		if err != nil {
-			logger.Error("Error to get connection", err)
 			return nil
 		}
 

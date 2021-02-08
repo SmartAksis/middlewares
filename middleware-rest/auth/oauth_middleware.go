@@ -1,16 +1,20 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/middlewares/midleware-rest/errors"
+	"net/http"
 	"strings"
 )
 
 const (
 	WithoutPermission = "without permission to proceed"
 )
+
+type ResponseErrorToken struct {
+	Message string
+	Error	string
+}
 
 func Authenticated(c *gin.Context){
 	token, _ := GetToken(c)
@@ -47,21 +51,20 @@ func AuthenticatedWrite(c *gin.Context) {
 }
 
 func authenticateScope(c *gin.Context, claims jwt.MapClaims, _scope string){
-
 	result := GetClaim(claims, "scope")
-
 	if result != nil {
 		for _, v := range result.([]interface{}) {
 			if v.(string) == _scope {
 				return
 			}
 		}
-		restErr := errors.MethodForbidden(WithoutPermission)
-		c.JSON(restErr.Status, restErr)
+		c.JSON(http.StatusForbidden, &ResponseErrorToken{
+			Message: WithoutPermission,
+			Error: "forbidden",
+		})
 		c.Abort()
 		return
 	}
-
 }
 
 
@@ -78,9 +81,10 @@ func GetToken(c *gin.Context) (*jwt.Token, jwt.MapClaims) {
 			return []byte("smartaksiskey"), nil
 		})
 		if err != nil {
-			restErr := errors.NotAuthorized("expired token")
-			fmt.Print(err.Error())
-			c.JSON(restErr.Status, restErr)
+			c.JSON(http.StatusUnauthorized, &ResponseErrorToken{
+				Message: "expired token",
+				Error: "unauthorized",
+			})
 			return nil, nil
 		}
 		return token, claims
@@ -118,7 +122,6 @@ func CheckScopes(c *gin.Context, scope string) {
 	}}
 
 func checkScopes(c *gin.Context, claims jwt.MapClaims, scope string) {
-	restErr := errors.MethodForbidden(WithoutPermission)
 	result := GetClaim(claims, "scope")
 
 	if result != nil {
@@ -127,18 +130,23 @@ func checkScopes(c *gin.Context, claims jwt.MapClaims, scope string) {
 				return
 			}
 		}
-		c.JSON(restErr.Status, restErr)
+		c.JSON(http.StatusForbidden, &ResponseErrorToken{
+			Message: WithoutPermission,
+			Error: "forbidden",
+		})
 		c.Abort()
 		return
 	}
 }
 
 func checkAuthorities(c *gin.Context, claims jwt.MapClaims, roles ... string) {
-	restErr := errors.MethodForbidden("without permission to proceed")
 	result := GetClaim(claims, "authorities")
 
 	if roles != nil && result == nil {
-		c.JSON(restErr.Status, restErr)
+		c.JSON(http.StatusForbidden, &ResponseErrorToken{
+			Message: "without permission to proceed",
+			Error: "forbidden",
+		})
 		c.Abort()
 		return
 	}
@@ -150,7 +158,10 @@ func checkAuthorities(c *gin.Context, claims jwt.MapClaims, roles ... string) {
 				return
 			}
 		}
-		c.JSON(restErr.Status, restErr)
+		c.JSON(http.StatusForbidden, &ResponseErrorToken{
+			Message: "without permission to proceed",
+			Error: "forbidden",
+		})
 		c.Abort()
 		return
 	}
