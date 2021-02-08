@@ -4,6 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -69,6 +70,7 @@ func authenticateScope(c *gin.Context, claims jwt.MapClaims, _scope string){
 
 
 func GetToken(c *gin.Context) (*jwt.Token, jwt.MapClaims) {
+	signKey := os.Getenv("JWT_SIGN_KEY")
 	request := c.Request
 	if request == nil {
 		return nil, nil
@@ -78,7 +80,7 @@ func GetToken(c *gin.Context) (*jwt.Token, jwt.MapClaims) {
 		tokenValue := strings.Replace(authorization, "Bearer ", "", 1)
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(tokenValue, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte("smartaksiskey"), nil
+			return []byte(signKey), nil
 		})
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, &ResponseErrorToken{

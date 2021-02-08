@@ -1,4 +1,4 @@
-package sqs
+package sqs_broker
 
 import (
 	"fmt"
@@ -23,11 +23,18 @@ type MessageSender struct {
 
 func awsSession() (*session.Session, error) {
 	awsSqsKey := os.Getenv("AWS_SQS_KEY")
-	awsSqsSecret := os.Getenv("AWS_SQS_KEY")
+	awsSqsSecret := os.Getenv("AWS_SQS_SECRET")
 	return session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1"),
 		Credentials: credentials.NewStaticCredentials(awsSqsKey, awsSqsSecret, ""),},
 	)
+}
+
+func buildQueueUrl(queueName string) string {
+	region := os.Getenv("AWS_REGION")
+	account := os.Getenv("AWS_ACCOUNT_NUMBER")
+	envi := os.Getenv("ENVI")
+	return fmt.Sprintf("https://sqs.%d.amazonaws.com/%d/%d-%d", region, account, envi, queueName)
 }
 
 func buildDeleteMessageInput(queueURL *string, receiptHandle *string) *sqs.DeleteMessageInput {
