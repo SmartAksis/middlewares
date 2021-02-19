@@ -1,7 +1,7 @@
-package database
+package relational
 
 import (
-	"OS"
+	"os"
 	"strconv"
 )
 

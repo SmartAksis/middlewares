@@ -3,11 +3,12 @@ module github.com/middlewares
 go 1.15
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/aws/aws-sdk-go v1.37.6 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/lib/pq v1.6.0 // indirect
+	go.mongodb.org/mongo-driver v1.4.6 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/text v0.3.5 // indirect
