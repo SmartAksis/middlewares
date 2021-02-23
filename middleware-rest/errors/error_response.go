@@ -55,3 +55,12 @@ func NewNotFoundError(message string) *ResponseError {
 		Error:   "not_found",
 	}
 }
+
+
+func NotBadCredentials(message string) *ResponseError {
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusUnauthorized,
+		Error:   "bad_credentials",
+	}
+}

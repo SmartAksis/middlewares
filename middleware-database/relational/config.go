@@ -18,7 +18,7 @@ type GormProperties struct {
 
 func GormDefaultConfig(schema string) GormProperties {
 	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
-	return GormProperties{
+	result := GormProperties{
 		Host:     os.Getenv("DB_HOST"),
 		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PASSWORD"),
@@ -28,4 +28,5 @@ func GormDefaultConfig(schema string) GormProperties {
 		SslMode:  "disable",
 		Schema:   schema,
 	}
+	return result
 }
