@@ -48,7 +48,7 @@ func NewBadRequestError(message string) *ResponseError {
 	}
 }
 
-func NewNotFoundError(message string) *ResponseError {
+func NotFoundError(message string) *ResponseError {
 	return &ResponseError{
 		Message: message,
 		Status:  http.StatusNotFound,
@@ -62,5 +62,13 @@ func NotBadCredentials(message string) *ResponseError {
 		Message: message,
 		Status:  http.StatusUnauthorized,
 		Error:   "bad_credentials",
+	}
+}
+
+func StatusDependency(message string) *ResponseError{
+	return &ResponseError{
+		Message: message,
+		Status:  http.StatusFailedDependency,
+		Error:   "dependency_failed",
 	}
 }

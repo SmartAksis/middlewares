@@ -45,7 +45,7 @@ func badRequestError(message string) *RequestError {
 	}
 }
 
-func PathVariable(c *gin.Context, key string) (int64, *RequestError) {
+func PathNumberInVariable(c *gin.Context, key string) (int64, *RequestError) {
 	numberParameter:=c.Params.ByName(key)
 	if numberParameter == "" {
 		return 0, badRequestError("Id parameter is required")
