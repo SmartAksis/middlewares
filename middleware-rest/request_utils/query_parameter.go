@@ -1,4 +1,4 @@
-package rest_parameters
+package request_utils
 
 import "fmt"
 
