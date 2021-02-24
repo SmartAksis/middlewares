@@ -8,18 +8,14 @@ import (
 
 type GenericDaoInterface interface {
 	GetModel() (tx *gorm.DB)
+	Paginate(dao GenericDaoInterface, filters []request_utils.FilterField, paginationProperties request_utils.PaginationProperties, dest interface{})
 }
 
-//func Save(dao GenericDaoInterface, entity interface{}) (interface{}, error){
-//	err := dao.GetModel().Save(entity).Error
-//	if err != nil {
-//		return nil, err
-//	} else {
-//		return entity, nil
-//	}
-//}
+type GenericDao struct {
 
-func Paginate(dao GenericDaoInterface, filters []request_utils.FilterField, paginationProperties request_utils.PaginationProperties, dest interface{}) error {
+}
+
+func (genericDao GenericDao) Paginate(dao GenericDaoInterface, filters []request_utils.FilterField, paginationProperties request_utils.PaginationProperties, dest interface{}) error {
 	var result *gorm.DB
 	if len(filters) > 0 {
 		result = dao.GetModel().Where(relational.GetFilter(filters...))
