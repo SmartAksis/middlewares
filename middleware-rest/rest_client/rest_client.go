@@ -1,10 +1,10 @@
 package rest_client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -82,10 +82,13 @@ func (e endPointEnv) BaseUrl(baseUrl string) endPointEnv {
 func Get(rest RestConsumer, url string, typeVar interface{}) error {
 	uri:=rest.BaseEndpoint() + url
 	resp, err := http.Get(uri)
+
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
+
 	body, err := ioutil.ReadAll(resp.Body)
+
 	if err != nil {
 		return err
 	}
@@ -94,5 +97,29 @@ func Get(rest RestConsumer, url string, typeVar interface{}) error {
 	if jsonUnMarshallError != nil {
 		return jsonUnMarshallError
 	}
+
+	return nil
+}
+
+
+func Post(rest RestConsumer, url string, body map[string]string, typeVar interface{}) error {
+	jsonValue, _ := json.Marshal(body)
+	uri:=rest.BaseEndpoint() + url
+	resp, err := http.Post(uri, "application/json", bytes.NewBuffer(jsonValue))
+
+	if err != nil {
+		return err
+	}
+
+	responseBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	jsonUnMarshallError:=json.Unmarshal(responseBody, typeVar)
+	if jsonUnMarshallError != nil {
+		return jsonUnMarshallError
+	}
+
 	return nil
 }
