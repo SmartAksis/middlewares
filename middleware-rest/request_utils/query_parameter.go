@@ -1,6 +1,10 @@
 package request_utils
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type dataQueryStringConverterInterface interface {
 	Convert(value interface{}) string
@@ -94,7 +98,13 @@ func (converter intConverter) Convert(value interface{}) string {
 func (converter float64Converter) Convert(value interface{}) string {
 	result, instanceOf := value.(float64)
 	if instanceOf {
-		return fmt.Sprintf("%f", result)
+		stringValue:=strconv.FormatFloat(result, 'E', -1, 64)
+		strings.Contains(stringValue, ".")
+		if strings.Contains(stringValue, ".") {
+			return fmt.Sprintf("%f", result)
+		} else {
+			return fmt.Sprintf("%d", int64(result))
+		}
 	} else {
 		var next dataQueryStringConverterInterface
 		next=converter.next
