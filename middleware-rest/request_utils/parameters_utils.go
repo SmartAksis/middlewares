@@ -18,22 +18,25 @@ type PaginationProperties struct {
 }
 
 type FilterField struct {
-	Field string `json:"pageNumber"`
-	Operation string `json:"operation"`
-	Value string `json:"value"`
+	Field 		string 		`json:"pageNumber"`
+	Operation 	string 		`json:"operation"`
+	Value 		interface{} `json:"value"`
 }
 
 
 func ConvertData(value interface{}) string {
-	chain:=&float64Converter{
-		next: &float32Converter{
-			next: &float32Converter{
-				next: &int64Converter{
-					next: &int32Converter{
-						next:&int16Converter{
-							next:&int8Converter{
-								next:&intConverter{
 
+	chain:=&stringConverter{
+		next: &float64Converter{
+			next: &float32Converter{
+				next: &float32Converter{
+					next: &int64Converter{
+						next: &int32Converter{
+							next:&int16Converter{
+								next:&int8Converter{
+									next:&intConverter{
+
+									},
 								},
 							},
 						},
@@ -45,16 +48,32 @@ func ConvertData(value interface{}) string {
 	return chain.Convert(value)
 }
 
-func FilterFieldAnd(field string, value string) FilterField{
-	return FilterField{ Field: field, Operation: "AND", Value: value}
+func convertValue(value string) interface{}{
+	intValue, err := strconv.Atoi(value)
+	if err == nil {
+		return intValue
+	}
+	float64Value, err := strconv.ParseFloat(value, 64)
+	if err == nil {
+		return float64Value
+	}
+	float32Value, err := strconv.ParseFloat(value, 64)
+	if err == nil {
+		return float32Value
+	}
+	return value
 }
 
-func FilterFieldOr(field string, value string) FilterField{
-	return FilterField{ Field: field, Operation: "OR", Value: value }
+func FilterFieldAnd(field string, value string) FilterField {
+	return FilterField{ Field: field, Operation: "AND", Value: convertValue(value)}
 }
 
-func FilterFieldLike(field string, value string) FilterField{
-	return FilterField{ Field: field, Operation: "LIKE", Value: value }
+func FilterFieldOr(field string, value string) FilterField {
+	return FilterField{ Field: field, Operation: "OR", Value: convertValue(value) }
+}
+
+func FilterFieldLike(field string, value string) FilterField {
+	return FilterField{ Field: field, Operation: "LIKE", Value: convertValue(value) }
 }
 
 

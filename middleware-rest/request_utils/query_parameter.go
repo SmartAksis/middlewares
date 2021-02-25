@@ -5,7 +5,8 @@ import "fmt"
 type dataQueryStringConverterInterface interface {
 	Convert(value interface{}) string
 }
-
+type stringConverter struct {next dataQueryStringConverterInterface
+}
 type int64Converter struct {next dataQueryStringConverterInterface
 }
 type int32Converter struct {next dataQueryStringConverterInterface
@@ -19,6 +20,18 @@ type intConverter struct {next dataQueryStringConverterInterface
 type float64Converter struct {next dataQueryStringConverterInterface
 }
 type float32Converter struct {next dataQueryStringConverterInterface
+}
+
+func (converter stringConverter) Convert(value interface{}) string {
+	result, instanceOf := value.(string)
+	if !instanceOf {
+		var next dataQueryStringConverterInterface
+		next=converter.next
+		if next != nil {
+			return next.Convert(value)
+		}
+	}
+	return fmt.Sprintf("%s", result)
 }
 
 func (converter int64Converter) Convert(value interface{}) string {

@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"github.com/smart-aksis/golang-middlewares/middleware-database/relational"
 	"github.com/smart-aksis/golang-middlewares/middleware-rest/request_utils"
 	"gorm.io/gorm"
 )
@@ -14,7 +13,18 @@ type GenericDaoInterface interface {
 func Paginate(dao GenericDaoInterface, filters []request_utils.FilterField, paginationProperties request_utils.PaginationProperties, dest interface{}) error {
 	var result *gorm.DB
 	if len(filters) > 0 {
-		result = dao.GetModel().Where(relational.GetFilter(filters...))
+		for _, filter := range filters {
+			if result == nil {
+				result = dao.GetModel().Where(filter.Field, filter.Value)
+			} else {
+				if filter.Operation == "OR" {
+					result.Or(filter.Field, filter.Value)
+				}
+				if filter.Operation != "OR" {
+					result.Where(filter.Field, filter.Value)
+				}
+			}
+		}
 	} else {
 		result = dao.GetModel()
 	}
