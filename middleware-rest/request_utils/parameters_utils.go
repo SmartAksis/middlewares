@@ -24,6 +24,27 @@ type FilterField struct {
 }
 
 
+func ConvertData(value interface{}) string {
+	chain:=&float64Converter{
+		next: &float32Converter{
+			next: &float32Converter{
+				next: &int64Converter{
+					next: &int32Converter{
+						next:&int16Converter{
+							next:&int8Converter{
+								next:&intConverter{
+
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return chain.Convert(value)
+}
+
 func FilterFieldAnd(field string, value string) FilterField{
 	return FilterField{ Field: field, Operation: "AND", Value: value}
 }
