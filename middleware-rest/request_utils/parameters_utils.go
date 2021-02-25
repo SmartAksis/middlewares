@@ -2,15 +2,10 @@ package request_utils
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/smart-aksis/golang-middlewares/middleware-rest/errors"
 	"net/http"
 	"strconv"
 )
-
-type RequestError struct {
-	Message string `json:"message"`
-	Status  int    `json:"status"`
-	Error   string `json:"error"`
-}
 
 type PaginationProperties struct {
 	PageNumber int `json:"page"`
@@ -77,15 +72,15 @@ func FilterFieldLike(field string, value string) FilterField {
 }
 
 
-func badRequestError(message string) *RequestError {
-	return &RequestError{
+func badRequestError(message string) *errors.ResponseError {
+	return &errors.ResponseError{
 		Message: message,
 		Status: http.StatusBadRequest,
 		Error: "Invalid request",
 	}
 }
 
-func PathNumberInVariable(c *gin.Context, key string) (int64, *RequestError) {
+func PathNumberInVariable(c *gin.Context, key string) (int64, *errors.ResponseError) {
 	numberParameter:=c.Params.ByName(key)
 	if numberParameter == "" {
 		return 0, badRequestError("Id parameter is required")
