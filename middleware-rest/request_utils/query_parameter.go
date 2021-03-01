@@ -1,6 +1,9 @@
 package request_utils
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type dataQueryStringConverterInterface interface {
 	Convert(value interface{}) string
@@ -107,7 +110,11 @@ func (converter intConverter) Convert(value interface{}) string {
 func (converter float64Converter) Convert(value interface{}) string {
 	result, instanceOf := value.(float64)
 	if instanceOf {
-		return fmt.Sprintf("%f", result)
+		if math.Mod(result, 1.0) == 0 {
+			return fmt.Sprintf("%d", int64(result))
+		} else {
+			return fmt.Sprintf("%f", result)
+		}
 	} else {
 		var next dataQueryStringConverterInterface
 		next=converter.next
@@ -121,7 +128,11 @@ func (converter float64Converter) Convert(value interface{}) string {
 func (converter float32Converter) Convert(value interface{}) string {
 	result, instanceOf := value.(float32)
 	if instanceOf {
-		return fmt.Sprintf("%f", result)
+		if math.Mod(float64(result), 1.0) == 0 {
+			return fmt.Sprintf("%d", int64(result))
+		} else {
+			return fmt.Sprintf("%f", result)
+		}
 	} else {
 		var next dataQueryStringConverterInterface
 		next=converter.next

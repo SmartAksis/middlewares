@@ -13,7 +13,7 @@ type PaginationProperties struct {
 }
 
 type FilterField struct {
-	Field 		string 		`json:"pageNumber"`
+	Field 		string 		`json:"field"`
 	Operation 	string 		`json:"operation"`
 	Value 		interface{} `json:"value"`
 }
@@ -43,32 +43,20 @@ func ConvertData(value interface{}) string {
 	return chain.Convert(value)
 }
 
-func convertValue(value string) interface{}{
-	intValue, err := strconv.Atoi(value)
-	if err == nil {
-		return intValue
-	}
-	float64Value, err := strconv.ParseFloat(value, 64)
-	if err == nil {
-		return float64Value
-	}
-	float32Value, err := strconv.ParseFloat(value, 64)
-	if err == nil {
-		return float32Value
-	}
-	return value
+func convertValue(value interface{}) interface{}{
+	return ConvertData(value)
 }
 
-func FilterFieldAnd(field string, value string) FilterField {
-	return FilterField{ Field: field, Operation: "AND", Value: convertValue(value)}
+func FilterFieldAnd(field string, value interface{}) FilterField {
+	return FilterField{ Field: field, Operation: "AND", Value: value}
 }
 
 func FilterFieldOr(field string, value string) FilterField {
-	return FilterField{ Field: field, Operation: "OR", Value: convertValue(value) }
+	return FilterField{ Field: field, Operation: "OR", Value: value }
 }
 
 func FilterFieldLike(field string, value string) FilterField {
-	return FilterField{ Field: field, Operation: "LIKE", Value: convertValue(value) }
+	return FilterField{ Field: field, Operation: "LIKE", Value: value }
 }
 
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func MapFromObject(data interface{}) (map[string]interface{}, error) {
+	func MapFromObject(data interface{}) (map[string]interface{}, error) {
 	converted, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,13 @@ func QueryFromObject(data interface{}) (string, error) {
 			}
 			var resultValue string
 			resultValue = ConvertData(value)
-			query+=fmt.Sprintf("%s=%s", key, resultValue)
+			if key != "id" {
+				query+=fmt.Sprintf("%s=%s", key, resultValue)
+			} else {
+				if resultValue != "0" {
+					query+=fmt.Sprintf("%s=%s", key, resultValue)
+				}
+			}
 		}
 	}
 	return query, nil

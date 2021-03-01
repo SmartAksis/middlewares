@@ -10,30 +10,31 @@ type GenericDaoInterface interface {
 	GetModel() (tx *gorm.DB)
 }
 
-func Paginate(dao GenericDaoInterface, filters []request_utils.FilterField, paginationProperties request_utils.PaginationProperties, dest interface{}) error {
-	var result *gorm.DB
-	if len(filters) > 0 {
+func Paginate(dao GenericDaoInterface, dest interface{}, paginationProperties *request_utils.PaginationProperties, filters  ...request_utils.FilterField) error {
+	result:=dao.GetModel()
+	if filters != nil && len(filters) > 0 {
 		for _, filter := range filters {
-			if result == nil {
-				result = dao.GetModel().Where(filter.Field, filter.Value)
-			} else {
-				if filter.Operation == "OR" {
-					result.Or(filter.Field, filter.Value)
-				}
-				if filter.Operation != "OR" {
-					result.Where(filter.Field, filter.Value)
-				}
+
+			if filter.Operation == "OR" {
+				result.Or(filter.Field, filter.Value)
 			}
+			if filter.Operation != "OR" {
+				result.Where(filter.Field, filter.Value)
+			}
+
 		}
-	} else {
-		result = dao.GetModel()
 	}
 
 	var limit int
 	var page int
 
-	limit = paginationProperties.PageSize
-	page = paginationProperties.PageNumber - 1
+	if paginationProperties == nil {
+		limit = 10
+		page = 0
+	} else {
+		limit = paginationProperties.PageSize
+		page = paginationProperties.PageNumber - 1
+	}
 
 	if page < 0 {
 		page = 0

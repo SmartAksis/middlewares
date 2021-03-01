@@ -17,6 +17,22 @@ type ResponseErrorToken struct {
 	Error	string
 }
 
+func getResponseErrorToken(httpStatus int, message string, error string) (int, ResponseErrorToken){
+	return httpStatus, ResponseErrorToken{
+		Message: message,
+		Error: error,
+	}
+}
+
+func forbidden(message string) (int, ResponseErrorToken){
+	return getResponseErrorToken(http.StatusUnauthorized, message, "forbidden")
+}
+
+func unauthorized(message string)(int, ResponseErrorToken){
+	return getResponseErrorToken(http.StatusForbidden, message, "unauthorized")
+}
+
+
 func Authenticated(c *gin.Context){
 	token, _ := GetToken(c)
 	if token == nil {
@@ -27,10 +43,12 @@ func Authenticated(c *gin.Context){
 func AuthenticatedRead(c *gin.Context) {
 	token, claims := GetToken(c)
 	if token == nil {
+		c.JSON(forbidden("Without jwt"))
 		c.Abort()
 		return
 	}
 	if claims == nil {
+		c.JSON(forbidden("Without claims"))
 		c.Abort()
 		return
 	}
@@ -41,10 +59,12 @@ func AuthenticatedRead(c *gin.Context) {
 func AuthenticatedWrite(c *gin.Context) {
 	token, claims := GetToken(c)
 	if token == nil {
+		c.JSON(forbidden("Without jwt"))
 		c.Abort()
 		return
 	}
 	if claims == nil {
+		c.JSON(forbidden("Without claims"))
 		c.Abort()
 		return
 	}
@@ -59,10 +79,7 @@ func authenticateScope(c *gin.Context, claims jwt.MapClaims, _scope string){
 				return
 			}
 		}
-		c.JSON(http.StatusForbidden, &ResponseErrorToken{
-			Message: WithoutPermission,
-			Error: "forbidden",
-		})
+		c.JSON(forbidden(WithoutPermission))
 		c.Abort()
 		return
 	}
@@ -83,10 +100,6 @@ func GetToken(c *gin.Context) (*jwt.Token, jwt.MapClaims) {
 			return []byte(signKey), nil
 		})
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, &ResponseErrorToken{
-				Message: "expired token",
-				Error: "unauthorized",
-			})
 			return nil, nil
 		}
 		return token, claims
@@ -132,10 +145,7 @@ func checkScopes(c *gin.Context, claims jwt.MapClaims, scope string) {
 				return
 			}
 		}
-		c.JSON(http.StatusForbidden, &ResponseErrorToken{
-			Message: WithoutPermission,
-			Error: "forbidden",
-		})
+		c.JSON(forbidden(WithoutPermission))
 		c.Abort()
 		return
 	}
@@ -145,10 +155,7 @@ func checkAuthorities(c *gin.Context, claims jwt.MapClaims, roles ... string) {
 	result := GetClaim(claims, "authorities")
 
 	if roles != nil && result == nil {
-		c.JSON(http.StatusForbidden, &ResponseErrorToken{
-			Message: "without permission to proceed",
-			Error: "forbidden",
-		})
+		c.JSON(forbidden("without permission to proceed"))
 		c.Abort()
 		return
 	}
@@ -160,10 +167,7 @@ func checkAuthorities(c *gin.Context, claims jwt.MapClaims, roles ... string) {
 				return
 			}
 		}
-		c.JSON(http.StatusForbidden, &ResponseErrorToken{
-			Message: "without permission to proceed",
-			Error: "forbidden",
-		})
+		c.JSON(forbidden("without permission to proceed"))
 		c.Abort()
 		return
 	}
