@@ -20,6 +20,7 @@ func GetPostgresDatabase(property GormProperties) *gorm.DB {
 
 		db, err := gorm.Open(dialect, &gorm.Config{})
 		if err != nil {
+			panic("Error to connect with database")
 			return nil
 		}
 		postgresDb = db
