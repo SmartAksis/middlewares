@@ -1,6 +1,8 @@
 package auth
 
 import (
+	b64 "encoding/base64"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -15,6 +17,34 @@ const (
 type ResponseErrorToken struct {
 	Message string
 	Error	string
+}
+
+func BasicReadAuthenticated(c *gin.Context) {
+	readClient:=os.Getenv("SMART_AKSIS_READ_CLIENT")
+	readPass:=os.Getenv("SMART_AKSIS_READ_PASS")
+	if readClient == "" || readPass == "" {
+		c.JSON(forbidden("There's no configuration to basic read authentication"))
+		c.Abort()
+		return
+	}
+	sEnc := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", readClient, readPass)))
+
+	request := c.Request
+	if request == nil {
+		c.JSON(forbidden("There's no request"))
+		c.Abort()
+		return
+	}
+	authorization := request.Header.Get("Authorization")
+
+	if authorization != "" && strings.HasPrefix(authorization, "Basic ") {
+		authorizationValue := strings.Replace(authorization, "Basic ", "", 1)
+		if sEnc != authorizationValue {
+			c.JSON(forbidden("There's no authentication"))
+			c.Abort()
+			return
+		}
+	}
 }
 
 func getResponseErrorToken(httpStatus int, message string, error string) (int, ResponseErrorToken){
