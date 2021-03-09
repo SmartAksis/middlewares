@@ -43,7 +43,7 @@ func NotAuthorized(message string) *ResponseError {
 func NewBadRequestError(message string) *ResponseError {
 	return &ResponseError{
 		Message: message,
-		Status:  http.StatusBadGateway,
+		Status:  http.StatusBadRequest,
 		Error:   "bad_request",
 	}
 }

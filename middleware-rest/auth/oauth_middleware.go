@@ -36,14 +36,29 @@ func BasicReadAuthenticated(c *gin.Context) {
 		return
 	}
 	authorization := request.Header.Get("Authorization")
+	errorAccessStatus, errorAccess:=forbidden("There's no basic authentication")
+	if authorization == "" {
+		c.JSON(errorAccessStatus, errorAccess)
+		c.Abort()
+		return
+	}
 
-	if authorization != "" && strings.HasPrefix(authorization, "Basic ") {
+	if strings.HasPrefix(authorization, "Basic ") {
 		authorizationValue := strings.Replace(authorization, "Basic ", "", 1)
 		if sEnc != authorizationValue {
-			c.JSON(forbidden("There's no authentication"))
+			c.JSON(errorAccessStatus, errorAccess)
 			c.Abort()
 			return
 		}
+
+	} else if !strings.HasPrefix(authorization, "Bearer ") {
+		c.JSON(errorAccessStatus, errorAccess)
+		c.Abort()
+		return
+	} else {
+		c.JSON(errorAccessStatus, errorAccess)
+		c.Abort()
+		return
 	}
 }
 
