@@ -88,10 +88,19 @@ func (e endPointEnv) BaseUrl(baseUrl string) endPointEnv {
 }
 
 
-func Get(rest RestConsumer, url string, typeVar interface{}) IntegrationStatus {
+func Get(rest RestConsumer, url string, typeVar interface{}, header *http.Header) IntegrationStatus {
+	client := &http.Client{}
 	uri:=rest.BaseEndpoint() + url
-	resp, err := http.Get(uri)
+	request, err := http.NewRequest(http.MethodGet, uri, nil)
+	request.Header.Set("Authorization", header.Get("Authorization"))
+	request.Header.Set("User-Agent", header.Get("User-Agent"))
+	request.Header.Set("Accept", header.Get("Accept"))
+	request.Header.Set("Postman-Token", header.Get("Postman-Token"))
+	request.Header.Set("Accept-Encoding", header.Get("Accept-Encoding"))
+	request.Header.Set("Connection", header.Get("Connection"))
+	resp, err := client.Do(request)
 	method:="GET"
+
 	if err != nil {
 		return IntegrationStatus{ Message: resp.Status, Status: resp.StatusCode, Method: method, Url: uri, Error: err,}
 	}
