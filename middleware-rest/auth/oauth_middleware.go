@@ -19,6 +19,18 @@ type ResponseErrorToken struct {
 	Error	string
 }
 
+func BasicSmartaksis() string{
+	readClient:=os.Getenv("SMART_AKSIS_WRITE_CLIENT")
+	readPass:=os.Getenv("SMART_AKSIS_WRITE_PASS")
+	return b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", readClient, readPass)))
+}
+
+func BasicReadSmartaksis() string{
+	readClient:=os.Getenv("SMART_AKSIS_READ_CLIENT")
+	readPass:=os.Getenv("SMART_AKSIS_READ_PASS")
+	return b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", readClient, readPass)))
+}
+
 func BasicReadAuthenticated(c *gin.Context) {
 	readClient:=os.Getenv("SMART_AKSIS_READ_CLIENT")
 	readPass:=os.Getenv("SMART_AKSIS_READ_PASS")

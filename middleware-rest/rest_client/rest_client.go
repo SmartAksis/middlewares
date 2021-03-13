@@ -88,16 +88,14 @@ func (e endPointEnv) BaseUrl(baseUrl string) endPointEnv {
 }
 
 
-func Get(rest RestConsumer, url string, typeVar interface{}, header *http.Header) IntegrationStatus {
+func Get(rest RestConsumer, url string, typeVar interface{}, headerMap map[string]string) IntegrationStatus {
 	client := &http.Client{}
 	uri:=rest.BaseEndpoint() + url
 	request, err := http.NewRequest(http.MethodGet, uri, nil)
-	request.Header.Set("Authorization", header.Get("Authorization"))
-	request.Header.Set("User-Agent", header.Get("User-Agent"))
-	request.Header.Set("Accept", header.Get("Accept"))
-	request.Header.Set("Postman-Token", header.Get("Postman-Token"))
-	request.Header.Set("Accept-Encoding", header.Get("Accept-Encoding"))
-	request.Header.Set("Connection", header.Get("Connection"))
+	for index, value := range headerMap {
+		request.Header.Set(index, value)
+	}
+
 	resp, err := client.Do(request)
 	method:="GET"
 
@@ -130,10 +128,25 @@ func Get(rest RestConsumer, url string, typeVar interface{}, header *http.Header
 }
 
 
-func Post(rest RestConsumer, url string, body map[string]string, typeVar interface{}) IntegrationStatus {
+func Post(rest RestConsumer, url string, body map[string]string, typeVar interface{}, headerMap map[string]string) IntegrationStatus {
 	jsonValue, _ := json.Marshal(body)
+	client := &http.Client{}
 	uri:=rest.BaseEndpoint() + url
-	resp, err := http.Post(uri, "application/json", bytes.NewBuffer(jsonValue))
+
+	var request *http.Request
+	var err error
+
+	if body != nil {
+		request, err = http.NewRequest(http.MethodPost, uri, bytes.NewBuffer(jsonValue))
+	} else {
+		request, err = http.NewRequest(http.MethodPost, uri, nil)
+	}
+
+	for index, value := range headerMap {
+		request.Header.Set(index, value)
+	}
+
+	resp, err := client.Do(request)
 	method:="POST"
 
 	if err != nil {
